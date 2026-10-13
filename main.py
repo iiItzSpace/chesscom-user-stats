@@ -48,6 +48,9 @@ def main():
         if not user:
             print("You didn´t enter an username")
             continue
+        if " " in user:
+            print("Error: Username cannot contain spaces.")
+            continue
 
         print(f"Fetching data for {user}...", flush=True)
         stats = get_stats(user)
