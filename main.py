@@ -9,8 +9,14 @@ if os.name == 'nt':
 else:
     import termios
 
+API_URL = "https://api.chess.com/pub/player/{}/stats"
+USER_AGENT = "chess.com-user-stats-cli/1.0"
 
 def clear_input_buffer():
+    """
+    Clears the terminal input buffer to prevent
+    inputs from being read during network requests.
+    """
     if os.name == 'nt':
         while msvcrt.kbhit():
             msvcrt.getch()
@@ -19,8 +25,16 @@ def clear_input_buffer():
 
 
 def get_stats(user: str) -> dict | None:
-    url = f"https://api.chess.com/pub/player/{user}/stats"
-    headers = {"User-Agent": "chess.com-user-stats-cli/1.0"}
+    """
+    Fetches chess stats for a given user from the Chess.com public API.
+    Args:
+        user (str): The Chess.com username
+
+    Returns:
+        dict | None: A dictionary with the user's stats, or None if the request fails.
+    """
+    url = API_URL.format(user)
+    headers = {"User-Agent": USER_AGENT}
     req = urllib.request.Request(url, headers=headers)
 
     try:
@@ -40,6 +54,9 @@ def get_stats(user: str) -> dict | None:
 
 
 def display_stats(user: str, stats: dict) -> None:
+    """
+    Extracts and prints the Rapid, Blitz, and Bullet ratings from the stats dictionary.
+    """
     rapid = stats.get("chess_rapid", {}).get("last", {}).get("rating", "N/A")
     blitz = stats.get("chess_blitz", {}).get("last", {}).get("rating", "N/A")
     bullet = stats.get("chess_bullet", {}).get("last", {}).get("rating", "N/A")
@@ -54,6 +71,9 @@ def display_stats(user: str, stats: dict) -> None:
 
 
 def main() -> int:
+    """
+    Main loop of the CLI application.
+    """
     print("== Chess.com User Stats ==")
 
     while True:
